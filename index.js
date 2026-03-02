@@ -12,8 +12,28 @@ const modalDescription = document.getElementById("modal-description");
 const viewNotes = document.querySelector(".view-notes");
 const hideCard = document.querySelector(".blur");
 const viewDltBtn = document.querySelector(".viewdlt-btn");
-
+const search = document.getElementById("search");
+const searchBtn = document.getElementById("search-button");
 const editNote = document.getElementById("edit-note");
+search.addEventListener("input", () => {
+  const query = search.value.toLowerCase();
+
+  document.querySelectorAll(".notes").forEach((note) => {
+    const titleEl = note
+      .querySelector(".notes-heading")
+      .textContent.toLowerCase();
+    const descEl = note.querySelector(".notes-des").textContent.toLowerCase();
+
+    if (titleEl.includes(query) || descEl.includes(query)) {
+      note.classList.add("highlight");
+      setTimeout(() => {
+        note.classList.remove("highlight");
+      }, 1000);
+    } else {
+      note.classList.remove("highlight"); // remove if no match
+    }
+  });
+});
 
 hideCard.addEventListener("click", () => {
   viewNotes.classList.remove("appear");
@@ -39,13 +59,6 @@ removeNoteBtn.addEventListener("click", () => {
   let notes = document.querySelector(".notes");
   notes.remove();
 });
-
-// addNoteBtn.addEventListener("click", () => {
-//   dynamicNotes();
-//   modal.classList.remove("active");
-//   modalTitle.value = "";
-//   modalDescription.value = "";
-// });
 
 viewDltBtn.addEventListener("click", () => {
   if (currentNote) {
