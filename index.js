@@ -17,21 +17,22 @@ const searchBtn = document.getElementById("search-button");
 const editNote = document.getElementById("edit-note");
 search.addEventListener("input", () => {
   const query = search.value.toLowerCase();
+  searchBtn.addEventListener("click", () => {
+    document.querySelectorAll(".notes").forEach((note) => {
+      const titleEl = note
+        .querySelector(".notes-heading")
+        .textContent.toLowerCase();
+      const descEl = note.querySelector(".notes-des").textContent.toLowerCase();
 
-  document.querySelectorAll(".notes").forEach((note) => {
-    const titleEl = note
-      .querySelector(".notes-heading")
-      .textContent.toLowerCase();
-    const descEl = note.querySelector(".notes-des").textContent.toLowerCase();
-
-    if (titleEl.includes(query) || descEl.includes(query)) {
-      note.classList.add("highlight");
-      setTimeout(() => {
-        note.classList.remove("highlight");
-      }, 1000);
-    } else {
-      note.classList.remove("highlight"); // remove if no match
-    }
+      if (titleEl.includes(query) || descEl.includes(query)) {
+        note.classList.add("highlight");
+        setTimeout(() => {
+          note.classList.remove("highlight");
+        }, 1000);
+      } else {
+        note.classList.remove("highlight"); // remove if no match
+      }
+    });
   });
 });
 
