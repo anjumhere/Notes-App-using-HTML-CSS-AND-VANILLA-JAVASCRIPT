@@ -15,6 +15,8 @@ const viewDltBtn = document.querySelector(".viewdlt-btn");
 const search = document.getElementById("search");
 const searchBtn = document.getElementById("search-button");
 const editNote = document.getElementById("edit-note");
+let clearNotes = document.querySelector(".clear-notes");
+const clearNotesBtn = document.getElementById("confirm-clear");
 search.addEventListener("input", () => {
   const query = search.value.toLowerCase();
   searchBtn.addEventListener("click", () => {
@@ -36,6 +38,26 @@ search.addEventListener("input", () => {
   });
 });
 
+// clearing all notes
+removeNoteBtn.addEventListener("click", () => {
+  clearNotes.classList.add("delete");
+});
+clearNotesBtn.addEventListener("click", () => {
+  let notes = document.querySelectorAll(".notes");
+  notes.forEach((every) => {
+    every.remove();
+  });
+  clearNotes.classList.remove("delete");
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    clearNotes.classList.remove("delete");
+    modal.classList.remove("active");
+    viewNotes.classList.remove("appear");
+  }
+});
+
 hideCard.addEventListener("click", () => {
   viewNotes.classList.remove("appear");
   console.log("working");
@@ -54,11 +76,6 @@ icon.addEventListener("click", () => {
   addNotes.classList.toggle("enter");
   removeNoteBtn.classList.toggle("enter");
   setTimeout(() => {}, 60);
-});
-
-removeNoteBtn.addEventListener("click", () => {
-  let notes = document.querySelector(".notes");
-  notes.remove();
 });
 
 viewDltBtn.addEventListener("click", () => {
