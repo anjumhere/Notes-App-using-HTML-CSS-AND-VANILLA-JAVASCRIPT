@@ -1,3 +1,4 @@
+// ---------- DOM references ----------
 const icon = document.getElementById("bring-button");
 const addNotes = document.getElementById("add-notes");
 const removeNoteBtn = document.getElementById("remove-notes");
@@ -16,26 +17,26 @@ const searchBtn = document.getElementById("search-button");
 const editNote = document.getElementById("edit-note");
 const clearNotes = document.querySelector(".clear-notes");
 const clearNotesBtn = document.getElementById("confirm-clear");
+const cardHeading = document.getElementById("card-heading");
+const cardDetails = document.getElementById("card-details");
 
+// ---------- State ----------
 let currentNote = null;
 let isEditing = false;
 
+// ---------- Search ----------
 function runSearch() {
   const query = search.value.toLowerCase();
 
   document.querySelectorAll(".notes").forEach((note) => {
-    const titleEl = note
-      .querySelector(".notes-heading")
-      .textContent.toLowerCase();
-    const descEl = note.querySelector(".notes-des").textContent.toLowerCase();
+    const title = note.querySelector(".notes-heading").textContent.toLowerCase();
+    const desc = note.querySelector(".notes-des").textContent.toLowerCase();
+    const isMatch = title.includes(query) || desc.includes(query);
 
-    if (titleEl.includes(query) || descEl.includes(query)) {
+    note.classList.remove("highlight");
+    if (isMatch && query) {
       note.classList.add("highlight");
-      setTimeout(() => {
-        note.classList.remove("highlight");
-      }, 1000);
-    } else {
-      note.classList.remove("highlight");
+      setTimeout(() => note.classList.remove("highlight"), 1000);
     }
   });
 }
@@ -45,15 +46,17 @@ search.addEventListener("keydown", (e) => {
   if (e.key === "Enter") runSearch();
 });
 
-// clearing all notes
+// ---------- Clear all notes ----------
 removeNoteBtn.addEventListener("click", () => {
   clearNotes.classList.add("delete");
 });
+
 clearNotesBtn.addEventListener("click", () => {
   document.querySelectorAll(".notes").forEach((note) => note.remove());
   clearNotes.classList.remove("delete");
 });
 
+// ---------- Escape key closes overlays ----------
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
     clearNotes.classList.remove("delete");
@@ -62,11 +65,19 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-// REMOVED: leftover console.log("working") debug statement
+// ---------- View note overlay ----------
 hideCard.addEventListener("click", () => {
   viewNotes.classList.remove("appear");
 });
 
+viewDltBtn.addEventListener("click", () => {
+  if (!currentNote) return;
+  currentNote.remove();
+  currentNote = null;
+  viewNotes.classList.remove("appear");
+});
+
+// ---------- Add/Edit modal open-close ----------
 modalBg.addEventListener("click", () => {
   modal.classList.remove("active");
 });
@@ -75,71 +86,57 @@ modalButton.addEventListener("click", () => {
   modal.classList.toggle("active");
 });
 
-// REMOVED: no-op setTimeout(() => {}, 60) at the end of this handler
+// ---------- Floating action button ----------
 icon.addEventListener("click", () => {
   icon.classList.toggle("rotatef");
   addNotes.classList.toggle("enter");
   removeNoteBtn.classList.toggle("enter");
 });
 
-viewDltBtn.addEventListener("click", () => {
-  if (currentNote) {
-    currentNote.remove();
-    currentNote = null;
-    viewNotes.classList.remove("appear");
-  }
-});
-
-function modalData() {
+// ---------- Note creation ----------
+function getModalData() {
   return {
     title: modalTitle.value,
     description: modalDescription.value,
   };
 }
 
-function dynamicNotes() {
-  let data = modalData();
+function createNoteElement({ title, description }) {
+  const note = document.createElement("div");
+  note.classList.add("notes", "display");
 
-  let notes = document.createElement("div");
-  notes.classList.add("notes");
-  notes.classList.add("display");
+  const titleEl = document.createElement("h1");
+  titleEl.textContent = title;
+  titleEl.classList.add("notes-heading");
 
-  let title = document.createElement("h1");
-  title.textContent = data.title;
-  title.classList.add("notes-heading");
+  const descEl = document.createElement("p");
+  descEl.textContent = description;
+  descEl.classList.add("notes-des");
 
-  let description = document.createElement("p");
-  description.textContent = data.description;
-  description.classList.add("notes-des");
-
-  let actionBtns = document.createElement("div");
+  const actionBtns = document.createElement("div");
   actionBtns.classList.add("action-buttons");
 
-  let editBtn = document.createElement("button");
+  const editBtn = document.createElement("button");
   editBtn.textContent = "View Notes";
   editBtn.classList.add("edit-button");
   editBtn.addEventListener("click", () => {
-    currentNote = notes;
-    let Heading = document.getElementById("card-heading");
-    let Details = document.getElementById("card-details");
-    Heading.textContent = title.textContent;
-    Details.textContent = description.textContent;
+    currentNote = note;
+    cardHeading.textContent = titleEl.textContent;
+    cardDetails.textContent = descEl.textContent;
     viewNotes.classList.add("appear");
   });
 
-  section.appendChild(notes);
-  notes.appendChild(title);
-  notes.appendChild(description);
-  notes.appendChild(actionBtns);
+  note.append(titleEl, descEl, actionBtns);
   actionBtns.appendChild(editBtn);
+  section.appendChild(note);
 
-  return {
-    data: notes,
-  };
+  return note;
 }
 
+// ---------- Edit existing note ----------
 editNote.addEventListener("click", () => {
   if (!currentNote) return;
+
   modal.classList.add("active");
   viewNotes.classList.remove("appear");
   addNoteBtn.textContent = "Edit Note";
@@ -148,16 +145,19 @@ editNote.addEventListener("click", () => {
   isEditing = true;
 });
 
+// ---------- Save (add or edit) ----------
 addNoteBtn.addEventListener("click", () => {
+  const data = getModalData();
+
   if (isEditing && currentNote) {
-    currentNote.querySelector(".notes-heading").textContent = modalTitle.value;
-    currentNote.querySelector(".notes-des").textContent =
-      modalDescription.value;
+    currentNote.querySelector(".notes-heading").textContent = data.title;
+    currentNote.querySelector(".notes-des").textContent = data.description;
     isEditing = false;
     addNoteBtn.textContent = "Add Note";
   } else {
-    dynamicNotes();
+    createNoteElement(data);
   }
+
   modal.classList.remove("active");
   modalTitle.value = "";
   modalDescription.value = "";
