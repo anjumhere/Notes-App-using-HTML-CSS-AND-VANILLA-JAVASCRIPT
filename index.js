@@ -1,9 +1,8 @@
-let icon = document.getElementById("bring-button");
+const icon = document.getElementById("bring-button");
 const addNotes = document.getElementById("add-notes");
 const removeNoteBtn = document.getElementById("remove-notes");
 const modalButton = document.getElementById("add-notes");
 const modal = document.querySelector(".modal");
-const body = document.querySelector("body");
 const modalBg = document.querySelector(".back");
 const section = document.querySelector(".one");
 const addNoteBtn = document.getElementById("add-note-modal");
@@ -15,12 +14,12 @@ const viewDltBtn = document.querySelector(".viewdlt-btn");
 const search = document.getElementById("search");
 const searchBtn = document.getElementById("search-button");
 const editNote = document.getElementById("edit-note");
-let clearNotes = document.querySelector(".clear-notes");
+const clearNotes = document.querySelector(".clear-notes");
 const clearNotesBtn = document.getElementById("confirm-clear");
 
-// FIX: searchBtn click listener used to be attached inside the input
-// handler, so it stacked a new listener on every keystroke. Now there
-// is exactly one click listener, plus Enter-key support.
+let currentNote = null;
+let isEditing = false;
+
 function runSearch() {
   const query = search.value.toLowerCase();
 
@@ -51,10 +50,7 @@ removeNoteBtn.addEventListener("click", () => {
   clearNotes.classList.add("delete");
 });
 clearNotesBtn.addEventListener("click", () => {
-  let notes = document.querySelectorAll(".notes");
-  notes.forEach((every) => {
-    every.remove();
-  });
+  document.querySelectorAll(".notes").forEach((note) => note.remove());
   clearNotes.classList.remove("delete");
 });
 
@@ -66,9 +62,9 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+// REMOVED: leftover console.log("working") debug statement
 hideCard.addEventListener("click", () => {
   viewNotes.classList.remove("appear");
-  console.log("working");
 });
 
 modalBg.addEventListener("click", () => {
@@ -79,11 +75,11 @@ modalButton.addEventListener("click", () => {
   modal.classList.toggle("active");
 });
 
+// REMOVED: no-op setTimeout(() => {}, 60) at the end of this handler
 icon.addEventListener("click", () => {
   icon.classList.toggle("rotatef");
   addNotes.classList.toggle("enter");
   removeNoteBtn.classList.toggle("enter");
-  setTimeout(() => {}, 60);
 });
 
 viewDltBtn.addEventListener("click", () => {
@@ -141,8 +137,6 @@ function dynamicNotes() {
     data: notes,
   };
 }
-let currentNote = null;
-let isEditing = false;
 
 editNote.addEventListener("click", () => {
   if (!currentNote) return;
