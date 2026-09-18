@@ -1,9 +1,9 @@
-// ---------- DOM references ----------
-const icon = document.getElementById("bring-button");
+let icon = document.getElementById("bring-button");
 const addNotes = document.getElementById("add-notes");
 const removeNoteBtn = document.getElementById("remove-notes");
 const modalButton = document.getElementById("add-notes");
 const modal = document.querySelector(".modal");
+const body = document.querySelector("body");
 const modalBg = document.querySelector(".back");
 const section = document.querySelector(".one");
 const addNoteBtn = document.getElementById("add-note-modal");
@@ -15,31 +15,28 @@ const viewDltBtn = document.querySelector(".viewdlt-btn");
 const search = document.getElementById("search");
 const searchBtn = document.getElementById("search-button");
 const editNote = document.getElementById("edit-note");
-const clearNotes = document.querySelector(".clear-notes");
+let clearNotes = document.querySelector(".clear-notes");
 const clearNotesBtn = document.getElementById("confirm-clear");
-const cardHeading = document.getElementById("card-heading");
-const cardDetails = document.getElementById("card-details");
 
-// ---------- State ----------
-let currentNote = null;
-let isEditing = false;
-
-// ---------- Search ----------
-// Bug fix: previously a new click listener was attached to searchBtn
-// every time the input fired, stacking duplicate handlers.
-// Now there's exactly one click listener that reads the live input value.
+// FIX: searchBtn click listener used to be attached inside the input
+// handler, so it stacked a new listener on every keystroke. Now there
+// is exactly one click listener, plus Enter-key support.
 function runSearch() {
   const query = search.value.toLowerCase();
 
   document.querySelectorAll(".notes").forEach((note) => {
-    const title = note.querySelector(".notes-heading").textContent.toLowerCase();
-    const desc = note.querySelector(".notes-des").textContent.toLowerCase();
-    const isMatch = title.includes(query) || desc.includes(query);
+    const titleEl = note
+      .querySelector(".notes-heading")
+      .textContent.toLowerCase();
+    const descEl = note.querySelector(".notes-des").textContent.toLowerCase();
 
-    note.classList.remove("highlight");
-    if (isMatch && query) {
+    if (titleEl.includes(query) || descEl.includes(query)) {
       note.classList.add("highlight");
-      setTimeout(() => note.classList.remove("highlight"), 1000);
+      setTimeout(() => {
+        note.classList.remove("highlight");
+      }, 1000);
+    } else {
+      note.classList.remove("highlight");
     }
   });
 }
@@ -49,17 +46,18 @@ search.addEventListener("keydown", (e) => {
   if (e.key === "Enter") runSearch();
 });
 
-// ---------- Clear all notes ----------
+// clearing all notes
 removeNoteBtn.addEventListener("click", () => {
   clearNotes.classList.add("delete");
 });
-
 clearNotesBtn.addEventListener("click", () => {
-  document.querySelectorAll(".notes").forEach((note) => note.remove());
+  let notes = document.querySelectorAll(".notes");
+  notes.forEach((every) => {
+    every.remove();
+  });
   clearNotes.classList.remove("delete");
 });
 
-// ---------- Escape key closes overlays ----------
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
     clearNotes.classList.remove("delete");
@@ -68,19 +66,11 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-// ---------- View note overlay ----------
 hideCard.addEventListener("click", () => {
   viewNotes.classList.remove("appear");
+  console.log("working");
 });
 
-viewDltBtn.addEventListener("click", () => {
-  if (!currentNote) return;
-  currentNote.remove();
-  currentNote = null;
-  viewNotes.classList.remove("appear");
-});
-
-// ---------- Add/Edit modal open-close ----------
 modalBg.addEventListener("click", () => {
   modal.classList.remove("active");
 });
@@ -89,57 +79,73 @@ modalButton.addEventListener("click", () => {
   modal.classList.toggle("active");
 });
 
-// ---------- Floating action button ----------
 icon.addEventListener("click", () => {
   icon.classList.toggle("rotatef");
   addNotes.classList.toggle("enter");
   removeNoteBtn.classList.toggle("enter");
+  setTimeout(() => {}, 60);
 });
 
-// ---------- Note creation ----------
-function getModalData() {
+viewDltBtn.addEventListener("click", () => {
+  if (currentNote) {
+    currentNote.remove();
+    currentNote = null;
+    viewNotes.classList.remove("appear");
+  }
+});
+
+function modalData() {
   return {
     title: modalTitle.value,
     description: modalDescription.value,
   };
 }
 
-function createNoteElement({ title, description }) {
-  const note = document.createElement("div");
-  note.classList.add("notes", "display");
+function dynamicNotes() {
+  let data = modalData();
 
-  const titleEl = document.createElement("h1");
-  titleEl.textContent = title;
-  titleEl.classList.add("notes-heading");
+  let notes = document.createElement("div");
+  notes.classList.add("notes");
+  notes.classList.add("display");
 
-  const descEl = document.createElement("p");
-  descEl.textContent = description;
-  descEl.classList.add("notes-des");
+  let title = document.createElement("h1");
+  title.textContent = data.title;
+  title.classList.add("notes-heading");
 
-  const actionBtns = document.createElement("div");
+  let description = document.createElement("p");
+  description.textContent = data.description;
+  description.classList.add("notes-des");
+
+  let actionBtns = document.createElement("div");
   actionBtns.classList.add("action-buttons");
 
-  const editBtn = document.createElement("button");
+  let editBtn = document.createElement("button");
   editBtn.textContent = "View Notes";
   editBtn.classList.add("edit-button");
   editBtn.addEventListener("click", () => {
-    currentNote = note;
-    cardHeading.textContent = titleEl.textContent;
-    cardDetails.textContent = descEl.textContent;
+    currentNote = notes;
+    let Heading = document.getElementById("card-heading");
+    let Details = document.getElementById("card-details");
+    Heading.textContent = title.textContent;
+    Details.textContent = description.textContent;
     viewNotes.classList.add("appear");
   });
 
-  note.append(titleEl, descEl, actionBtns);
+  section.appendChild(notes);
+  notes.appendChild(title);
+  notes.appendChild(description);
+  notes.appendChild(actionBtns);
   actionBtns.appendChild(editBtn);
-  section.appendChild(note);
 
-  return note;
+  return {
+    data: notes,
+  };
 }
+let currentNote = null;
+let isEditing = false;
 
-// ---------- Edit existing note ----------
 editNote.addEventListener("click", () => {
   if (!currentNote) return;
-
   modal.classList.add("active");
   viewNotes.classList.remove("appear");
   addNoteBtn.textContent = "Edit Note";
@@ -148,19 +154,16 @@ editNote.addEventListener("click", () => {
   isEditing = true;
 });
 
-// ---------- Save (add or edit) ----------
 addNoteBtn.addEventListener("click", () => {
-  const data = getModalData();
-
   if (isEditing && currentNote) {
-    currentNote.querySelector(".notes-heading").textContent = data.title;
-    currentNote.querySelector(".notes-des").textContent = data.description;
+    currentNote.querySelector(".notes-heading").textContent = modalTitle.value;
+    currentNote.querySelector(".notes-des").textContent =
+      modalDescription.value;
     isEditing = false;
     addNoteBtn.textContent = "Add Note";
   } else {
-    createNoteElement(data);
+    dynamicNotes();
   }
-
   modal.classList.remove("active");
   modalTitle.value = "";
   modalDescription.value = "";
