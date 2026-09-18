@@ -3,17 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Notes App</title>
+    <title>Noter — Modern Notes Workspace</title>
     <link rel="stylesheet" href="style.css" />
+    <!-- Fixed Font Awesome CDN Link -->
     <link
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
-      integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
+    <!-- Plus Jakarta Sans Font -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Crimson+Pro:ital,wght@0,400;1,400&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
   </head>
@@ -27,31 +26,35 @@
           type="text"
           id="search"
           class="input"
-          placeholder="Search Your notes"
+          placeholder="Search your notes..."
         />
-
         <button id="search-button" class="search-btn">Search</button>
       </nav>
     </header>
+
     <main>
       <section id="main-body" class="notes-body">
         <section class="one"></section>
       </section>
+
       <section class="section-button">
         <button id="add-notes" class="add-btn">Add Notes</button>
         <button id="remove-notes" class="remove-button">Clear All Notes</button>
         <i class="fa-solid fa-circle-plus plus-icon" id="bring-button"></i>
       </section>
+
+      <!-- Add Note Modal -->
       <div class="modal">
         <div class="back"></div>
         <div class="modal-card">
           <h2>Add New Note</h2>
-          <input type="text" id="modal-title" placeholder="Enter the title.." />
-          <textarea id="modal-description" placeholder="Description"></textarea>
+          <input type="text" id="modal-title" placeholder="Enter note title..." />
+          <textarea id="modal-description" placeholder="Write your note here..."></textarea>
           <button id="add-note-modal">Add Note</button>
         </div>
       </div>
 
+      <!-- View Note Modal -->
       <div class="view-notes">
         <div class="blur"></div>
         <div class="view-card">
@@ -63,15 +66,18 @@
           </div>
         </div>
       </div>
+
+      <!-- Clear Notes Modal -->
       <div class="clear-notes" id="clear-note">
         <div class="bg-blur"></div>
         <div class="align">
           <h3 class="asking">Warning!</h3>
-          <p>This will clear all the notes</p>
-          <button class="ok" id="confirm-clear">Clear</button>
+          <p>This will clear all saved notes. Are you sure?</p>
+          <button class="ok" id="confirm-clear">Clear All</button>
         </div>
       </div>
     </main>
+
     <script src="index.js"></script>
   </body>
 </html>
