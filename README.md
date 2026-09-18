@@ -1,6 +1,8 @@
-# Notes App
+# Noter
 
 A lightweight, vanilla JavaScript notes app. Add, view, edit, search, and delete notes — no framework, no build step.
+
+🔗 [Live demo](https://anjumhere.github.io/Notes-App-using-HTML-CSS-AND-VANILLA-JAVASCRIPT/)
 
 ## Features
 
@@ -18,8 +20,10 @@ A lightweight, vanilla JavaScript notes app. Add, view, edit, search, and delete
 .
 ├── index.html      # Markup (modal, note cards container, overlays, search bar)
 ├── style.css       # Styling and animation classes (.active, .appear, .enter, .highlight, .delete)
-└── notes-app.js    # App logic
+└── script.js       # App logic
 ```
+
+> Adjust the `script.js` filename above if your repo names it differently (e.g. `notes-app.js`).
 
 ## How it works
 
@@ -29,7 +33,12 @@ A lightweight, vanilla JavaScript notes app. Add, view, edit, search, and delete
 
 ## Running locally
 
-No build step required. Just open `index.html` in a browser, or serve the folder with any static server, e.g.:
+```bash
+git clone https://github.com/anjumhere/Notes-App-using-HTML-CSS-AND-VANILLA-JAVASCRIPT.git
+cd Notes-App-using-HTML-CSS-AND-VANILLA-JAVASCRIPT
+```
+
+No build step required — just open `index.html` in a browser, or serve the folder with any static server:
 
 ```bash
 npx serve .
